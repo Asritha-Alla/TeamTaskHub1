@@ -279,6 +279,48 @@ export interface ActivityItem {
   createdAt: string;
 }
 
+export interface TasksByStatus {
+  status: string;
+  label: string;
+  count: number;
+}
+
+export interface TasksByPriority {
+  priority: string;
+  label: string;
+  count: number;
+}
+
+export interface TasksByUser {
+  userId: string;
+  userName: string;
+  avatarColor: string;
+  count: number;
+}
+
+export type OverdueTaskAssignee = {
+  id?: string;
+  name?: string;
+  avatarColor?: string;
+} | null;
+
+export interface OverdueTask {
+  id: string;
+  title: string;
+  priority: string;
+  status: string;
+  dueDate: string;
+  projectId: string;
+  assignee?: OverdueTaskAssignee;
+}
+
+export interface DashboardAnalytics {
+  byStatus: TasksByStatus[];
+  byPriority: TasksByPriority[];
+  byUser: TasksByUser[];
+  overdueTasks: OverdueTask[];
+}
+
 export type ListTasksParams = {
 projectId?: string;
 status?: string;

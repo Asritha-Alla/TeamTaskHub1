@@ -23,6 +23,7 @@ import type {
   ActivityItem,
   AddMemberInput,
   AuthResponse,
+  DashboardAnalytics,
   DashboardSummary,
   ErrorResponse,
   HealthStatus,
@@ -1676,6 +1677,83 @@ export function useGetRecentActivity<TData = Awaited<ReturnType<typeof getRecent
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetRecentActivityQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetDashboardAnalyticsUrl = () => {
+
+
+
+
+  return `/api/dashboard/analytics`
+}
+
+/**
+ * @summary Get analytics data for charts
+ */
+export const getDashboardAnalytics = async ( options?: RequestInit): Promise<DashboardAnalytics> => {
+
+  return customFetch<DashboardAnalytics>(getGetDashboardAnalyticsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDashboardAnalyticsQueryKey = () => {
+    return [
+    `/api/dashboard/analytics`
+    ] as const;
+    }
+
+
+export const getGetDashboardAnalyticsQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardAnalytics>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardAnalytics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardAnalyticsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardAnalytics>>> = ({ signal }) => getDashboardAnalytics({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboardAnalytics>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDashboardAnalyticsQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardAnalytics>>>
+export type GetDashboardAnalyticsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get analytics data for charts
+ */
+
+export function useGetDashboardAnalytics<TData = Awaited<ReturnType<typeof getDashboardAnalytics>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardAnalytics>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDashboardAnalyticsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

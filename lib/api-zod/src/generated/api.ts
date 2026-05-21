@@ -454,3 +454,39 @@ export const GetRecentActivityResponseItem = zod.object({
 export const GetRecentActivityResponse = zod.array(GetRecentActivityResponseItem)
 
 
+/**
+ * @summary Get analytics data for charts
+ */
+export const GetDashboardAnalyticsResponse = zod.object({
+  "byStatus": zod.array(zod.object({
+  "status": zod.string(),
+  "label": zod.string(),
+  "count": zod.number()
+})),
+  "byPriority": zod.array(zod.object({
+  "priority": zod.string(),
+  "label": zod.string(),
+  "count": zod.number()
+})),
+  "byUser": zod.array(zod.object({
+  "userId": zod.string(),
+  "userName": zod.string(),
+  "avatarColor": zod.string(),
+  "count": zod.number()
+})),
+  "overdueTasks": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "priority": zod.string(),
+  "status": zod.string(),
+  "dueDate": zod.string(),
+  "projectId": zod.string(),
+  "assignee": zod.object({
+  "id": zod.string().optional(),
+  "name": zod.string().optional(),
+  "avatarColor": zod.string().optional()
+}).nullish()
+}))
+})
+
+
