@@ -55,17 +55,13 @@ SESSION_SECRET=any-string
 
 ### 3. Run in development
 
-Open two terminals:
+Start both apps together from the repository root:
 
 ```bash
-# Terminal 1 — API server (port 8080)
-PORT=8080 pnpm --filter @workspace/api-server run dev
-
-# Terminal 2 — React frontend (port 3000)
-PORT=3000 BASE_PATH=/ pnpm --filter @workspace/task-app run dev
+pnpm run dev
 ```
 
-Then open [http://localhost:3000](http://localhost:3000).
+This launches the API server on [http://localhost:8080](http://localhost:8080) and the React frontend on [http://localhost:3000](http://localhost:3000). If one of those ports is already in use, the launcher automatically falls back to the next free port.
 
 ## Building for Production
 

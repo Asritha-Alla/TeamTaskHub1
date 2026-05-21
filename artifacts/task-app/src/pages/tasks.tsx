@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Plus, Trash2, Edit, CalendarIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
+import { asArray } from "@/lib/utils";
 
 function getStatusBadge(status: string) {
   switch (status) {
@@ -58,8 +59,11 @@ export default function Tasks() {
   // Data queries
   const { data: currentUser } = useGetMe();
   const { data: tasks, isLoading: isTasksLoading } = useListTasks({});
-  const { data: projects = [] } = useListProjects();
-  const { data: users = [] } = useListUsers();
+  const { data: projects } = useListProjects();
+  const { data: users } = useListUsers();
+  const projectList = asArray<{ id: string; myRole?: string; name?: string }>(projects);
+  const taskList = asArray<Task>(tasks);
+  const userList = asArray<{ id: string; name: string; email?: string }>(users);
 
   // Mutations
   const createTaskMutation = useCreateTask();
@@ -70,21 +74,21 @@ export default function Tasks() {
   // Derived data
   const projectRoles = useMemo(() => {
     const roles: Record<string, string> = {};
-    projects.forEach(p => { roles[p.id] = p.myRole || 'member'; });
+    projectList.forEach(p => { roles[p.id] = p.myRole || 'member'; });
     return roles;
-  }, [projects]);
+  }, [projectList]);
 
-  const adminProjects = useMemo(() => projects.filter(p => p.myRole === 'admin'), [projects]);
+  const adminProjects = useMemo(() => projectList.filter(p => p.myRole === 'admin'), [projectList]);
 
   const filteredTasks = useMemo(() => {
-    if (!tasks) return [];
-    return tasks.filter(t => {
+    if (!taskList.length) return [];
+    return taskList.filter(t => {
       const matchStatus = filterStatus === 'all' || t.status === filterStatus;
       const matchPriority = filterPriority === 'all' || t.priority === filterPriority;
       const matchSearch = !searchQuery || t.title.toLowerCase().includes(searchQuery.toLowerCase());
       return matchStatus && matchPriority && matchSearch;
     });
-  }, [tasks, filterStatus, filterPriority, searchQuery]);
+  }, [taskList, filterStatus, filterPriority, searchQuery]);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -355,7 +359,7 @@ export default function Tasks() {
                   </SelectTrigger>
                   <SelectContent>
                     {editTask ? (
-                      <SelectItem value={formData.projectId}>{projects.find(p => p.id === formData.projectId)?.name || 'Project'}</SelectItem>
+                      <SelectItem value={formData.projectId}>{projectList.find(p => p.id === formData.projectId)?.name || 'Project'}</SelectItem>
                     ) : (
                       adminProjects.map(p => (
                         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
@@ -405,7 +409,7 @@ export default function Tasks() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="unassigned">Unassigned</SelectItem>
-                      {users.map(u => (
+                      {userList.map(u => (
                         <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
                       ))}
                     </SelectContent>

@@ -35,6 +35,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", router);
 
+// Handle JSON parse errors from body-parser (malformed JSON requests)
+// Return a 400 JSON error instead of letting the error crash the process.
+app.use((err, _req, res, next) => {
+  if (!err) return next();
+
+  // body-parser sets `type === 'entity.parse.failed'` for parse errors
+  if (err.type === "entity.parse.failed" || err instanceof SyntaxError) {
+    res.status(400).json({ error: "Invalid JSON" });
+    return;
+  }
+
+  next(err);
+});
+
 if (process.env.NODE_ENV === "production") {
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const staticPath = path.resolve(__dirname, "../../task-app/dist/public");

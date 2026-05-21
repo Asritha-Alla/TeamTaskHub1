@@ -50,6 +50,29 @@ export default function Dashboard() {
   const { data: analytics, isLoading: isAnalyticsLoading } = useGetDashboardAnalytics({ query: { queryKey: getGetDashboardAnalyticsQueryKey() } });
   const { data: activities, isLoading: isActivitiesLoading } = useGetRecentActivity({ query: { queryKey: getGetRecentActivityQueryKey() } });
 
+  const recentActivities = useMemo(() => {
+    if (Array.isArray(activities)) {
+      return activities;
+    }
+
+    if (activities && typeof activities === "object") {
+      const candidate = activities as Record<string, unknown>;
+      if (Array.isArray(candidate.activities)) {
+        return candidate.activities;
+      }
+
+      if (Array.isArray(candidate.data)) {
+        return candidate.data;
+      }
+
+      if (Array.isArray(candidate.items)) {
+        return candidate.items;
+      }
+    }
+
+    return [];
+  }, [activities]);
+
   const hasOverdue = (summary?.overdueTasks ?? 0) > 0;
 
   return (
@@ -227,11 +250,11 @@ export default function Dashboard() {
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
               </div>
-            ) : activities?.length === 0 ? (
+            ) : recentActivities.length === 0 ? (
               <div className="flex h-[280px] items-center justify-center text-muted-foreground">No recent activity.</div>
             ) : (
               <div className="space-y-4 max-h-[280px] overflow-y-auto pr-2">
-                {activities?.map((activity) => (
+                {recentActivities.map((activity) => (
                   <div key={activity.id} className="flex gap-4 items-start p-3 rounded-lg border bg-card/50 text-sm transition-colors hover:bg-accent/50">
                     <Avatar className="h-8 w-8 mt-0.5">
                       <AvatarFallback className="text-xs bg-primary/10 text-primary">{activity.userName.substring(0, 2).toUpperCase()}</AvatarFallback>

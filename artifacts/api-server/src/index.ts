@@ -23,3 +23,15 @@ app.listen(port, (err) => {
 
   logger.info({ port }, "Server listening");
 });
+
+// Global handlers to surface runtime errors during development without
+// allowing the process to exit immediately. These prevent the dev server
+// from terminating for unhandled promises or exceptions so we can diagnose
+// and fix issues interactively.
+process.on("unhandledRejection", (reason) => {
+  logger.error({ err: reason }, "Unhandled promise rejection");
+});
+
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught exception");
+});

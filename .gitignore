@@ -7,7 +7,9 @@ out-tsc
 *.tsbuildinfo
 .expo
 .expo-shared
-
+.env
+.npmrc
+package-lock.json
 # dependencies
 node_modules
 
@@ -44,6 +46,5 @@ Thumbs.db
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
-# Replit
 .cache/
 .local/

@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { asArray } from "@/lib/utils";
 
 export default function ProjectDetail() {
   const params = useParams();
@@ -30,6 +31,8 @@ export default function ProjectDetail() {
   const { data: project, isLoading: isProjectLoading } = useGetProject(id, { query: { enabled: !!id, queryKey: getGetProjectQueryKey(id) } });
   const { data: tasks, isLoading: isTasksLoading } = useListTasks({ projectId: id }, { query: { enabled: !!id, queryKey: getListTasksQueryKey({ projectId: id }) } });
   const { data: members, isLoading: isMembersLoading } = useGetProjectMembers(id, { query: { enabled: !!id, queryKey: getGetProjectMembersQueryKey(id) } });
+  const taskList = asArray(tasks);
+  const memberList = asArray(members);
   
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -134,7 +137,7 @@ export default function ProjectDetail() {
   };
 
   const isAdmin = project?.myRole === 'admin';
-  const adminCount = members?.filter(m => m.role === 'admin').length || 0;
+  const adminCount = memberList.filter(m => m.role === 'admin').length || 0;
 
   if (isProjectLoading) {
     return (
@@ -215,10 +218,10 @@ export default function ProjectDetail() {
           <div className="space-y-3">
             {isTasksLoading ? (
                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-20 w-full" />)
-            ) : tasks?.length === 0 ? (
+            ) : taskList.length === 0 ? (
               <div className="p-8 text-center border rounded-md bg-muted/20 text-muted-foreground">No tasks yet. Create one above!</div>
             ) : (
-              tasks?.map(task => (
+              taskList.map(task => (
                 <div key={task.id} className="p-4 border rounded-md bg-card flex justify-between items-center shadow-sm" data-testid={`task-row-${task.id}`}>
                   <div>
                     <h3 className="font-medium text-foreground">{task.title}</h3>
@@ -238,7 +241,7 @@ export default function ProjectDetail() {
              <h2 className="text-2xl font-semibold tracking-tight">Project Members</h2>
           </div>
 
-          {isAdmin && (
+            {isAdmin && (
             <div className="p-6 border rounded-lg bg-card shadow-sm space-y-4">
               <h3 className="font-medium">Invite new member</h3>
               <form onSubmit={handleAddMember} className="flex gap-4 items-start">

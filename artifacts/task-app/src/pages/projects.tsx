@@ -12,12 +12,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Search, FolderOpen } from "lucide-react";
+import { asArray } from "@/lib/utils";
 
 export default function Projects() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { data: projects, isLoading } = useListProjects({ query: { queryKey: getListProjectsQueryKey() } });
   const createProject = useCreateProject();
+  const projectList = asArray<{ id: string; name: string; description?: string | null; color: string; myRole: string; taskCount: number; completedTaskCount: number }>(projects);
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -26,13 +28,13 @@ export default function Projects() {
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
-    if (!projects) return [];
-    if (!search.trim()) return projects;
+    if (!projectList.length) return [];
+    if (!search.trim()) return projectList;
     const q = search.toLowerCase();
-    return projects.filter(
+    return projectList.filter(
       (p) => p.name.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q)
     );
-  }, [projects, search]);
+  }, [projectList, search]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +61,7 @@ export default function Projects() {
         <div>
           <h1 className="text-2xl font-bold">Projects</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {projects ? `${projects.length} project${projects.length !== 1 ? "s" : ""}` : ""}
+            {projectList.length ? `${projectList.length} project${projectList.length !== 1 ? "s" : ""}` : ""}
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>

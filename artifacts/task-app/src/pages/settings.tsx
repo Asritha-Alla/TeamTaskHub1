@@ -2,6 +2,7 @@ import { useGetMe, getGetMeQueryKey, useListUsers, getListUsersQueryKey } from "
 import { useTheme } from "@/components/theme-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sun, Moon, Monitor } from "lucide-react";
+import { asArray } from "@/lib/utils";
 
 const THEMES = [
   { value: "light" as const, label: "Light", icon: Sun },
@@ -13,6 +14,7 @@ export default function Settings() {
   const { data: user, isLoading } = useGetMe({ query: { queryKey: getGetMeQueryKey() } });
   const { data: users, isLoading: isUsersLoading } = useListUsers({ query: { queryKey: getListUsersQueryKey() } });
   const { theme, setTheme } = useTheme();
+  const teamMembers = asArray<{ id: string; name: string; email: string; avatarColor?: string }>(users);
 
   return (
     <div className="p-4 sm:p-8 max-w-3xl mx-auto space-y-6">
@@ -99,7 +101,7 @@ export default function Settings() {
                   </div>
                 </div>
               ))
-            : users?.map((u) => (
+            : teamMembers.map((u) => (
                 <div key={u.id} className="flex items-center gap-3 px-6 py-3">
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shrink-0"
