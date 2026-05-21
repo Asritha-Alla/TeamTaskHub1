@@ -31,7 +31,7 @@ const activitySchema = new Schema<IActivity>(
     entityId: { type: String, required: true },
     entityName: { type: String, required: true },
   },
-  { timestamps: true, updatedAt: false }
+  { timestamps: { createdAt: true, updatedAt: false } }
 );
 
 export const Activity = mongoose.model<IActivity>("Activity", activitySchema);
