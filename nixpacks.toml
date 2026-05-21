@@ -1,0 +1,11 @@
+[phases.setup]
+cmds = ["corepack enable"]
+
+[phases.install]
+cmds = ["pnpm install --no-frozen-lockfile"]
+
+[phases.build]
+cmds = [
+  "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/task-app run build",
+  "pnpm --filter @workspace/api-server run build",
+]
