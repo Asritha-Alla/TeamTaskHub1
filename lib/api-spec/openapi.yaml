@@ -123,7 +123,7 @@ paths:
     post:
       operationId: createProject
       tags: [projects]
-      summary: Create a new project
+      summary: Create a new project (creator becomes Admin)
       security:
         - bearerAuth: []
       requestBody:
@@ -144,7 +144,7 @@ paths:
     get:
       operationId: getProject
       tags: [projects]
-      summary: Get a project by ID
+      summary: Get a project by ID (members only)
       security:
         - bearerAuth: []
       parameters:
@@ -160,6 +160,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Not found
           content:
@@ -169,7 +175,7 @@ paths:
     patch:
       operationId: updateProject
       tags: [projects]
-      summary: Update a project
+      summary: Update a project (admin only)
       security:
         - bearerAuth: []
       parameters:
@@ -191,10 +197,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Project"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     delete:
       operationId: deleteProject
       tags: [projects]
-      summary: Delete a project
+      summary: Delete a project (admin only)
       security:
         - bearerAuth: []
       parameters:
@@ -206,6 +218,172 @@ paths:
       responses:
         "204":
           description: Project deleted
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /projects/{id}/members:
+    get:
+      operationId: getProjectMembers
+      tags: [projects]
+      summary: List project members with roles (members only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectMemberDetail"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: addProjectMember
+      tags: [projects]
+      summary: Add a member by email (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddMemberInput"
+      responses:
+        "200":
+          description: Member added, returns updated member list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectMemberDetail"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /projects/{id}/members/{userId}:
+    delete:
+      operationId: removeProjectMember
+      tags: [projects]
+      summary: Remove a member (admin only, cannot remove self if last admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Member removed, returns updated member list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectMemberDetail"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /projects/{id}/members/{userId}/role:
+    patch:
+      operationId: updateMemberRole
+      tags: [projects]
+      summary: Change a member's role (admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMemberRoleInput"
+      responses:
+        "200":
+          description: Role updated, returns updated member list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectMemberDetail"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /tasks:
     get:
@@ -484,6 +662,59 @@ components:
         - token
         - user
 
+    ProjectMember:
+      type: object
+      properties:
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [admin, member]
+      required:
+        - userId
+        - role
+
+    ProjectMemberDetail:
+      type: object
+      properties:
+        userId:
+          type: string
+        role:
+          type: string
+          enum: [admin, member]
+        name:
+          type: string
+        email:
+          type: string
+        avatarColor:
+          type: string
+      required:
+        - userId
+        - role
+        - name
+        - email
+        - avatarColor
+
+    AddMemberInput:
+      type: object
+      properties:
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, member]
+      required:
+        - email
+
+    UpdateMemberRoleInput:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [admin, member]
+      required:
+        - role
+
     Project:
       type: object
       properties:
@@ -497,14 +728,17 @@ components:
           type: string
         ownerId:
           type: string
-        memberIds:
+        members:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/ProjectMember"
         taskCount:
           type: integer
         completedTaskCount:
           type: integer
+        myRole:
+          type: string
+          enum: [admin, member]
         createdAt:
           type: string
         updatedAt:
@@ -514,9 +748,10 @@ components:
         - name
         - color
         - ownerId
-        - memberIds
+        - members
         - taskCount
         - completedTaskCount
+        - myRole
         - createdAt
         - updatedAt
 

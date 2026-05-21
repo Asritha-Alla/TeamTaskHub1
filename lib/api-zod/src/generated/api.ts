@@ -72,9 +72,13 @@ export const ListProjectsResponseItem = zod.object({
   "description": zod.string().nullish(),
   "color": zod.string(),
   "ownerId": zod.string(),
-  "memberIds": zod.array(zod.string()),
+  "members": zod.array(zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member'])
+})),
   "taskCount": zod.number(),
   "completedTaskCount": zod.number(),
+  "myRole": zod.enum(['admin', 'member']),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
@@ -82,7 +86,7 @@ export const ListProjectsResponse = zod.array(ListProjectsResponseItem)
 
 
 /**
- * @summary Create a new project
+ * @summary Create a new project (creator becomes Admin)
  */
 
 
@@ -95,7 +99,7 @@ export const CreateProjectBody = zod.object({
 
 
 /**
- * @summary Get a project by ID
+ * @summary Get a project by ID (members only)
  */
 export const GetProjectParams = zod.object({
   "id": zod.coerce.string()
@@ -107,16 +111,20 @@ export const GetProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "color": zod.string(),
   "ownerId": zod.string(),
-  "memberIds": zod.array(zod.string()),
+  "members": zod.array(zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member'])
+})),
   "taskCount": zod.number(),
   "completedTaskCount": zod.number(),
+  "myRole": zod.enum(['admin', 'member']),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
 
 
 /**
- * @summary Update a project
+ * @summary Update a project (admin only)
  */
 export const UpdateProjectParams = zod.object({
   "id": zod.coerce.string()
@@ -137,20 +145,103 @@ export const UpdateProjectResponse = zod.object({
   "description": zod.string().nullish(),
   "color": zod.string(),
   "ownerId": zod.string(),
-  "memberIds": zod.array(zod.string()),
+  "members": zod.array(zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member'])
+})),
   "taskCount": zod.number(),
   "completedTaskCount": zod.number(),
+  "myRole": zod.enum(['admin', 'member']),
   "createdAt": zod.string(),
   "updatedAt": zod.string()
 })
 
 
 /**
- * @summary Delete a project
+ * @summary Delete a project (admin only)
  */
 export const DeleteProjectParams = zod.object({
   "id": zod.coerce.string()
 })
+
+
+/**
+ * @summary List project members with roles (members only)
+ */
+export const GetProjectMembersParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const GetProjectMembersResponseItem = zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member']),
+  "name": zod.string(),
+  "email": zod.string(),
+  "avatarColor": zod.string()
+})
+export const GetProjectMembersResponse = zod.array(GetProjectMembersResponseItem)
+
+
+/**
+ * @summary Add a member by email (admin only)
+ */
+export const AddProjectMemberParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const AddProjectMemberBody = zod.object({
+  "email": zod.string(),
+  "role": zod.enum(['admin', 'member']).optional()
+})
+
+export const AddProjectMemberResponseItem = zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member']),
+  "name": zod.string(),
+  "email": zod.string(),
+  "avatarColor": zod.string()
+})
+export const AddProjectMemberResponse = zod.array(AddProjectMemberResponseItem)
+
+
+/**
+ * @summary Remove a member (admin only, cannot remove self if last admin)
+ */
+export const RemoveProjectMemberParams = zod.object({
+  "id": zod.coerce.string(),
+  "userId": zod.coerce.string()
+})
+
+export const RemoveProjectMemberResponseItem = zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member']),
+  "name": zod.string(),
+  "email": zod.string(),
+  "avatarColor": zod.string()
+})
+export const RemoveProjectMemberResponse = zod.array(RemoveProjectMemberResponseItem)
+
+
+/**
+ * @summary Change a member's role (admin only)
+ */
+export const UpdateMemberRoleParams = zod.object({
+  "id": zod.coerce.string(),
+  "userId": zod.coerce.string()
+})
+
+export const UpdateMemberRoleBody = zod.object({
+  "role": zod.enum(['admin', 'member'])
+})
+
+export const UpdateMemberRoleResponseItem = zod.object({
+  "userId": zod.string(),
+  "role": zod.enum(['admin', 'member']),
+  "name": zod.string(),
+  "email": zod.string(),
+  "avatarColor": zod.string()
+})
+export const UpdateMemberRoleResponse = zod.array(UpdateMemberRoleResponseItem)
 
 
 /**

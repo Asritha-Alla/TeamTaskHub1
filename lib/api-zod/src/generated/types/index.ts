@@ -8,6 +8,8 @@
 
 export * from './activityItem';
 export * from './activityItemType';
+export * from './addMemberInput';
+export * from './addMemberInputRole';
 export * from './authResponse';
 export * from './dashboardSummary';
 export * from './errorResponse';
@@ -16,6 +18,11 @@ export * from './listTasksParams';
 export * from './loginInput';
 export * from './project';
 export * from './projectInput';
+export * from './projectMember';
+export * from './projectMemberDetail';
+export * from './projectMemberDetailRole';
+export * from './projectMemberRole';
+export * from './projectMyRole';
 export * from './projectUpdate';
 export * from './registerInput';
 export * from './task';
@@ -29,4 +36,6 @@ export * from './taskStatusUpdateStatus';
 export * from './taskUpdate';
 export * from './taskUpdatePriority';
 export * from './taskUpdateStatus';
+export * from './updateMemberRoleInput';
+export * from './updateMemberRoleInputRole';
 export * from './user';

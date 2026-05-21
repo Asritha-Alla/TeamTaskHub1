@@ -5,6 +5,8 @@
  * Team Task Management API
  * OpenAPI spec version: 0.1.0
  */
+import type { ProjectMember } from './projectMember';
+import type { ProjectMyRole } from './projectMyRole';
 
 export interface Project {
   id: string;
@@ -13,9 +15,10 @@ export interface Project {
   description?: string | null;
   color: string;
   ownerId: string;
-  memberIds: string[];
+  members: ProjectMember[];
   taskCount: number;
   completedTaskCount: number;
+  myRole: ProjectMyRole;
   createdAt: string;
   updatedAt: string;
 }

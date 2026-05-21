@@ -39,6 +39,68 @@ export interface AuthResponse {
   user: User;
 }
 
+export type ProjectMemberRole = typeof ProjectMemberRole[keyof typeof ProjectMemberRole];
+
+
+export const ProjectMemberRole = {
+  admin: 'admin',
+  member: 'member',
+} as const;
+
+export interface ProjectMember {
+  userId: string;
+  role: ProjectMemberRole;
+}
+
+export type ProjectMemberDetailRole = typeof ProjectMemberDetailRole[keyof typeof ProjectMemberDetailRole];
+
+
+export const ProjectMemberDetailRole = {
+  admin: 'admin',
+  member: 'member',
+} as const;
+
+export interface ProjectMemberDetail {
+  userId: string;
+  role: ProjectMemberDetailRole;
+  name: string;
+  email: string;
+  avatarColor: string;
+}
+
+export type AddMemberInputRole = typeof AddMemberInputRole[keyof typeof AddMemberInputRole];
+
+
+export const AddMemberInputRole = {
+  admin: 'admin',
+  member: 'member',
+} as const;
+
+export interface AddMemberInput {
+  email: string;
+  role?: AddMemberInputRole;
+}
+
+export type UpdateMemberRoleInputRole = typeof UpdateMemberRoleInputRole[keyof typeof UpdateMemberRoleInputRole];
+
+
+export const UpdateMemberRoleInputRole = {
+  admin: 'admin',
+  member: 'member',
+} as const;
+
+export interface UpdateMemberRoleInput {
+  role: UpdateMemberRoleInputRole;
+}
+
+export type ProjectMyRole = typeof ProjectMyRole[keyof typeof ProjectMyRole];
+
+
+export const ProjectMyRole = {
+  admin: 'admin',
+  member: 'member',
+} as const;
+
 export interface Project {
   id: string;
   name: string;
@@ -46,9 +108,10 @@ export interface Project {
   description?: string | null;
   color: string;
   ownerId: string;
-  memberIds: string[];
+  members: ProjectMember[];
   taskCount: number;
   completedTaskCount: number;
+  myRole: ProjectMyRole;
   createdAt: string;
   updatedAt: string;
 }
