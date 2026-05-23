@@ -1,3 +1,6 @@
+[variables]
+NIXPACKS_NODE_VERSION = "22"
+
 [phases.setup]
 cmds = ["npm install -g pnpm@9.15.9"]
 
