@@ -1,5 +1,5 @@
 [phases.setup]
-cmds = ["npm install -g pnpm@11.2.2"]
+cmds = ["npm install -g pnpm@9.15.9"]
 
 [phases.install]
 cmds = ["npm install -g corepack@latest && corepack enable && pnpm install --no-frozen-lockfile"]
